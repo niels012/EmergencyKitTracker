@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚠ EMRG KIT — Inventory</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">⚠ EMRG KIT</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">☰</button>
+    <ul class="nav-menu" id="nav-menu">
+      <li><a href="index.html">DASHBOARD</a></li>
+      <li><a href="inventory.html" class="active">INVENTORY</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Inventory Page ── -->
+  <main class="inventory-page">
+    <h1 class="page-title">// STOCKPILE INVENTORY</h1>
+    <p class="page-subtitle">ALL TRACKED ITEMS — FILTER BY CATEGORY</p>
+
+    <!-- Category Tabs -->
+    <div class="cat-tabs-wrap" id="category-tabs">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Item Grid -->
+    <div class="item-grid" id="item-grid">
+      <div class="empty-grid-state">// LOADING INVENTORY...</div>
+    </div>
+  </main>
+
+  <!-- Floating Add Button -->
+  <button class="fab" id="add-item-btn">+ ADD ITEM</button>
+
+  <!-- ── Add Item Modal ── -->
+  <div class="modal-overlay" id="add-item-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">// ADD NEW ITEM TO INVENTORY</div>
+      </div>
+      <div class="modal-body">
+        <form id="add-item-form" novalidate>
+
+          <!-- Item Name -->
+          <div class="form-group">
+            <label class="form-label" for="item-name">ITEM NAME</label>
+            <input
+              class="form-input"
+              type="text"
+              id="item-name"
+              placeholder="e.g. Ibuprofen 200mg"
+              autocomplete="off"
+              required
+            />
+            <div class="field-error" id="name-error"></div>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label" for="item-category">CATEGORY</label>
+            <select class="form-select" id="item-category" required>
+              <option value="">— SELECT CATEGORY —</option>
+              <option value="water">Water &amp; Hydration</option>
+              <option value="food">Food &amp; Cooking</option>
+              <option value="firstaid">First Aid &amp; Medical</option>
+              <option value="lighting">Lighting &amp; Communication</option>
+              <option value="sanitation">Sanitation &amp; Hygiene</option>
+              <option value="clothing">Clothing</option>
+              <option value="documents">Documents</option>
+            </select>
+            <div class="field-error" id="category-error"></div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="form-group">
+            <label class="form-label" for="item-quantity">QUANTITY</label>
+            <input
+              class="form-input"
+              type="number"
+              id="item-quantity"
+              value="1"
+              min="1"
+            />
+          </div>
+
+          <!-- Has Expiration? -->
+          <div class="form-group">
+            <label class="form-label">HAS EXPIRATION DATE?</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="has-exp" id="has-exp-no" value="no" checked />
+                ◉ NO
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="has-exp" id="has-exp-yes" value="yes" />
+                ◉ YES
+              </label>
+            </div>
+          </div>
+
+          <!-- Expiration Date (conditional reveal) -->
+          <div class="exp-date-group" id="exp-date-wrapper">
+            <div class="form-group">
+              <label class="form-label" for="exp-date">EXPIRATION DATE</label>
+              <input class="form-input" type="date" id="exp-date" />
+              <div class="field-error" id="date-error"></div>
+            </div>
+          </div>
+
+          <!-- Form footer -->
+          <div class="modal-footer">
+            <button type="submit" class="save-btn">[ SAVE ITEM ]</button>
+            <button type="button" class="btn-cancel" id="modal-cancel">cancel</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase CDN (compat v8) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- App scripts -->
+  <script src="js/firebase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/inventory.js"></script>
+</body>
+</html>
