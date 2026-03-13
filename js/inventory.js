@@ -2,21 +2,25 @@
 // INVENTORY LOGIC — inventory.js
 // ============================================================
 
+// ── n8n Webhook Config ──────────────────────────────────────
+// Replace with your actual n8n webhook URL.
+// In n8n: add a "Webhook" trigger node → copy its POST URL here.
 const N8N_WEBHOOK_URL = 'https://contentworksheet.app.n8n.cloud/webhook/1df03a52-5998-4eb0-9807-a5ab2a11c3b6';
+// ────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
   let allItems = [];
   let activeCategory = 'all';
 
-  const itemGrid        = document.getElementById('item-grid');
-  const addItemBtn      = document.getElementById('add-item-btn');
-  const modal           = document.getElementById('add-item-modal');
-  const modalClose      = document.getElementById('modal-cancel');
-  const addItemForm     = document.getElementById('add-item-form');
-  const hasExpYes       = document.getElementById('has-exp-yes');
-  const hasExpNo        = document.getElementById('has-exp-no');
-  const expDateWrapper  = document.getElementById('exp-date-wrapper');
-  const categoryTabs    = document.getElementById('category-tabs');
+  const itemGrid = document.getElementById('item-grid');
+  const addItemBtn = document.getElementById('add-item-btn');
+  const modal = document.getElementById('add-item-modal');
+  const modalClose = document.getElementById('modal-cancel');
+  const addItemForm = document.getElementById('add-item-form');
+  const hasExpYes = document.getElementById('has-exp-yes');
+  const hasExpNo = document.getElementById('has-exp-no');
+  const expDateWrapper = document.getElementById('exp-date-wrapper');
+  const categoryTabs = document.getElementById('category-tabs');
 
   // Build category tabs
   const tabsHtml = `
@@ -150,11 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     clearErrors();
 
-    const name     = document.getElementById('item-name').value.trim();
+    const name = document.getElementById('item-name').value.trim();
     const category = document.getElementById('item-category').value;
     const quantity = parseInt(document.getElementById('item-quantity').value) || 1;
-    const hasExp   = hasExpYes.checked;
-    const expDate  = document.getElementById('exp-date').value;
+    const hasExp = hasExpYes.checked;
+    const expDate = document.getElementById('exp-date').value;
 
     let valid = true;
 
@@ -178,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveBtn.disabled = true;
 
     try {
-      await db.collection('items').add({
+      const docRef = await db.collection('items').add({
         name,
         category,
         quantity,
@@ -186,6 +190,25 @@ document.addEventListener('DOMContentLoaded', () => {
         expirationDate: hasExp ? expDate : null,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+
+      // ── Fire n8n webhook (non-blocking) ──────────────────
+      // Webhook failure won't block the UI or prevent the save.
+      fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'item_added',
+          itemId: docRef.id,
+          name,
+          category,
+          quantity,
+          hasExpiration: hasExp,
+          expirationDate: hasExp ? expDate : null,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(err => console.warn('n8n webhook failed (non-fatal):', err));
+      // ─────────────────────────────────────────────────────
+
       closeModal();
     } catch (err) {
       console.error('Save error:', err);
@@ -210,6 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function escHtml(str) {
     if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 });
