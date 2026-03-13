@@ -2,6 +2,8 @@
 // INVENTORY LOGIC — inventory.js
 // ============================================================
 
+const N8N_WEBHOOK_URL = 'https://contentworksheet.app.n8n.cloud/webhook/1df03a52-5998-4eb0-9807-a5ab2a11c3b6';
+
 document.addEventListener('DOMContentLoaded', () => {
   let allItems = [];
   let activeCategory = 'all';
